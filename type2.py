@@ -7,9 +7,9 @@ import os
 
 import logging
 import time
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from img2bytearray import convert_to_bytearray
-
+path = os.path.dirname(__file__) + '/'
 logging.basicConfig(level=logging.DEBUG)
 
 client = mqtt.Client()
@@ -20,23 +20,24 @@ client.loop_start()
 
 try:
     logging.info("epd1in54_V2 Demo")
-    
+
     # Drawing on the image
     logging.info("1.Drawing on the image...")
     image = Image.new('1', (200, 200), 255)  # 255: clear the frame
-    
+
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('Font.ttc', 24)
-    font18 = ImageFont.truetype('Font.ttc', 18)
-    font16 = ImageFont.truetype('Font.ttc', 16)
+    font = ImageFont.truetype(path + 'Font.ttc', 24)
+    font18 = ImageFont.truetype(path + 'Font.ttc', 18)
+    font16 = ImageFont.truetype(path + 'Font.ttc', 16)
     # HEAD
-    draw.rectangle((0, 0, 50, 24), fill = 0)
-    draw.text((2, 2), '11/07', font = font18, fill = 255)
-    draw.text((80, 0), '預約列表', font = font, fill = 0)
+    # draw.rectangle((0, 0, 50, 24), fill=0)
+    draw.rounded_rectangle((0, 0, 53, 24), 3, fill=0)
+    draw.text((3, 2), '11/07', font=font18, fill=255)
+    draw.text((80, 0), '預約列表', font=font, fill=0)
 
     currentTime = 0
 
-    #BODY
+    # BODY
     data = [
         {"start": 10, "end": 11, "title": "鄭○文"},
         {"start": 12, "end": 13, "title": "林○宏"},
@@ -47,13 +48,18 @@ try:
     ]
 
     y = 32
-    
+    x = 56
+
     for item in data:
         current = currentTime >= item['start'] and currentTime < item['end']
-        draw.rectangle((0, y, 100, y+24), fill = 0 if not current else 255)
-        draw.text((7, y+4), f"{item['start']}:00~{item['end']}:00", font = font16, fill = 255 if not current else 0)
-        draw.text((110, y-2), item['title'], font = font, fill = 0)
+        draw.polygon([(100, y), (100, y+24), (110, y+24)], fill=0)
+        draw.rectangle((0, y, 100, y+24), fill=0 if not current else 255)
+        draw.text((7, y+4), f"{item['start']}:00~{item['end']}:00",
+                  font=font16, fill=255 if not current else 0)
+        draw.text((120, y-2), item['title'], font=font, fill=0)
+        draw.line((190, x, 36, x), fill=0)
         y += 28
+        x += 28
 
     # draw.rectangle((0, 28, 90, 52), fill = 0)
     # draw.text((2, 32), '10:00~11:00', font = font16, fill = 255)
@@ -67,11 +73,12 @@ try:
     # draw.text((2, 88), '15:00~16:00', font = font16, fill = 255)
     # draw.text((100, 84), '鄭○○', font = font, fill = 0)
 
-    client.publish('eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
+    client.publish(
+        'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
     time.sleep(2)
-        
+
 except IOError as e:
     logging.info(e)
-    
-except KeyboardInterrupt:    
+
+except KeyboardInterrupt:
     logging.info("ctrl + c:")

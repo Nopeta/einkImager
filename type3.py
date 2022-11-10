@@ -6,8 +6,9 @@ import struct
 import os
 import logging
 import time
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from img2bytearray import convert_to_bytearray
+path = os.path.dirname(__file__) + '/'
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -19,24 +20,24 @@ client.loop_start()
 
 try:
     logging.info("epd1in54_V2 Demo")
-    
+
     # Drawing on the image
     logging.info("1.Drawing on the image...")
     image = Image.new('1', (200, 200), 255)  # 255: clear the frame
-    
-    draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('Font.ttc', 24)
-    font18 = ImageFont.truetype('Font.ttc', 18)
-    font16 = ImageFont.truetype('Font.ttc', 16)
-    fontEmoji = ImageFont.truetype('Emoji.ttf', 72)
-    # HEAD
-    draw.rectangle((0, 0, 50, 24), fill = 0)
-    draw.text((2, 2), '11/07', font = font18, fill = 255)
-    draw.text((80, 0), '預約列表', font = font, fill = 0)
 
-    #BODY
-    draw.text((55,60), "⏰", font=fontEmoji, fill= 0)
-    draw.text((4, 150), '今日沒有任何預約', font = font, fill = 0)
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype(path + 'Font.ttc', 24)
+    font18 = ImageFont.truetype(path + 'Font.ttc', 18)
+    font16 = ImageFont.truetype(path + 'Font.ttc', 16)
+    fontEmoji = ImageFont.truetype(path + 'Emoji.ttf', 72)
+    # HEAD
+    draw.rectangle((0, 0, 50, 24), fill=0)
+    draw.text((2, 2), '11/07', font=font18, fill=255)
+    draw.text((80, 0), '預約列表', font=font, fill=0)
+
+    # BODY
+    draw.text((55, 60), "⏰", font=fontEmoji, fill=0)
+    draw.text((4, 150), '今日沒有任何預約', font=font, fill=0)
     # data = [
     #     {"time": 10, "hour": 1, "title": "鄭○文"},
     #     {"time": 12, "hour": 1, "title": "林○宏"},
@@ -47,7 +48,7 @@ try:
     # ]
 
     # y = 32
-    
+
     # for item in data:
     #     draw.rectangle((0, y, 100, y+24), fill = 0)
     #     draw.text((7, y+4), f"{item['time']}:00~{item['time']+item['hour']}:00", font = font16, fill = 255)
@@ -66,11 +67,12 @@ try:
     # draw.text((2, 88), '15:00~16:00', font = font16, fill = 255)
     # draw.text((100, 84), '鄭○○', font = font, fill = 0)
 
-    client.publish('eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
+    client.publish(
+        'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
     time.sleep(2)
-        
+
 except IOError as e:
     logging.info(e)
-    
-except KeyboardInterrupt:    
+
+except KeyboardInterrupt:
     logging.info("ctrl + c:")
