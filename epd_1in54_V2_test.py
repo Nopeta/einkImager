@@ -45,9 +45,25 @@ try:
     # draw.line((56, 60, 16, 110), fill=0)
     # draw.arc((90, 60, 150, 120), 0, 360, fill=0)
     # draw.rectangle((0, 0, 50, 24), fill=0)
-    draw.rounded_rectangle((0, 0, 50, 24), 3, fill=0)
+    x = 0
+    y = 32
+    w = 100
+    h = 56
+    r = 5
 
-    draw.rectangle((0, 32, 100, 56), fill=0)
+    '''Rounds'''
+    draw.ellipse((x, y, x+r, y+r), fill=0)
+    # draw.ellipse((x+w-r, y, x+w, y+r), fill=0)
+    # draw.ellipse((x, y+h-r, x+r, y+h), fill=0)
+    # draw.ellipse((x+w-r, y+h-r, x+w, y+h), fill=0)
+
+    '''rec.s'''
+    draw.rectangle((x+r/2, y, w, h), fill=0)
+    draw.rectangle((x, y+r/2, w, h), fill=0)
+
+    # draw.rounded_rectangle((0, 0, 50, 24), 3, fill=0)
+
+    # draw.rectangle((0, 32, 100, 56), fill=0)
     draw.polygon([(100, 32), (100, 56), (110, 56)], fill=0)
     # draw.rectangle((16, 130, 56, 150), fill=0)
     # draw.chord((90, 130, 150, 190), 0, 360, fill=0)

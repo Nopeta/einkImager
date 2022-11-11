@@ -52,9 +52,14 @@ try:
 
     for item in data:
         current = currentTime >= item['start'] and currentTime < item['end']
-        draw.polygon([(99.5, y), (99.5, y+24), (110, y+24)], fill=0)
-        draw.rounded_rectangle((0, y, 100, y+24), 3,
-                               fill=0 if not current else 255)
+        draw.polygon([(100, y), (100, y+24), (110, y+24)],
+                     fill=0 if not current else 255)
+        draw.ellipse((0, y, 5, y+5), fill=0 if not current else 255)
+        draw.rectangle((0+5/2, y, 100, y+24),
+                       fill=0 if not current else 255 if not current else 255)
+        draw.rectangle((0, y+5/2, 100, y+24), fill=0 if not current else 255)
+        # draw.rounded_rectangle((0, y, 100, y+24), 3,
+        #                        fill=0 if not current else 255)
         draw.text((7, y+4), f"{item['start']}:00~{item['end']}:00",
                   font=font16, fill=255 if not current else 0)
         draw.text((120, y-2), item['title'], font=font, fill=0)
