@@ -4,12 +4,12 @@ import sys
 import paho.mqtt.client as mqtt
 import struct
 import os
-
 import logging
 import time
 from PIL import Image, ImageDraw, ImageFont
 from img2bytearray import convert_to_bytearray
 path = os.path.dirname(__file__) + '/'
+
 logging.basicConfig(level=logging.DEBUG)
 
 client = mqtt.Client()
@@ -27,17 +27,22 @@ try:
 
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(path + 'Font.ttc', 24)
+    font20 = ImageFont.truetype(path + 'Font.ttc', 20)
     font18 = ImageFont.truetype(path + 'Font.ttc', 18)
     font16 = ImageFont.truetype(path + 'Font.ttc', 16)
-    # HEAD
-    # draw.rectangle((0, 0, 50, 24), fill=0)
-    draw.rounded_rectangle((0, 0, 53, 24), 3, fill=0)
-    draw.text((3, 2), '11/07', font=font18, fill=255)
-    draw.text((80, 0), '預約列表', font=font, fill=0)
+    font10 = ImageFont.truetype(path + 'Font.ttc', 10)
+    fontEmoji = ImageFont.truetype(path + 'Emoji.ttf', 14)
 
-    currentTime = 0
-
-    # BODY
+    dTime = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    date = [
+        {"week": "Mon.", "day": 7},
+        {"week": "Tue.", "day": 8},
+        {"week": "Wed.", "day": 9},
+        {"week": "Thu.", "day": 10},
+        {"week": "Fri.", "day": 11},
+        {"week": "Sat.", "day": 12},
+        {"week": "Sun.", "day": 13},
+    ]
     data = [
         {"start": 10, "end": 11, "title": "鄭○文"},
         {"start": 12, "end": 13, "title": "林○宏"},
@@ -47,20 +52,39 @@ try:
         {"start": 19, "end": 21, "title": "王○龍"}
     ]
 
-    y = 32
-    x = 56
+    # HEAD
+    draw.text((2, 0), 'Nov.', font=font20, fill=0)
+    draw.text((80, 0), '預約顯示', font=font20, fill=0)
 
-    for item in data:
-        current = currentTime >= item['start'] and currentTime < item['end']
-        draw.polygon([(99.5, y), (99.5, y+24), (110, y+24)], fill=0)
-        draw.rounded_rectangle((0, y, 100, y+24), 3,
-                               fill=0 if not current else 255)
-        draw.text((7, y+4), f"{item['start']}:00~{item['end']}:00",
-                  font=font16, fill=255 if not current else 0)
-        draw.text((120, y-2), item['title'], font=font, fill=0)
-        draw.line((190, x, 36, x), fill=0)
-        y += 28
-        x += 28
+    # BODY
+    x = 0
+    xLine = 0
+    y = 0
+    for item in date:
+        draw.text((x+20, 22),  item['week'], font=font16, fill=0)
+        draw.text((x+54, 22),  f"{item['day']}", font=font16, fill=0)
+        draw.line((xLine+67, 35, xLine+67, 200), fill=0)
+        x += 57.5
+        xLine += 60
+
+    for item in dTime:
+        draw.text((2, y+37),  f"{item}", font=font10, fill=0)
+        draw.line((14, y+43, 200, y+43), fill=0)
+        y += 20
+
+    draw.rounded_rectangle((15, 45, 65, 81), 3, fill=0)
+    draw.text((31, 47), '預', font=font18, fill=255)
+    draw.text((28, 67), '10~12', font=font10, fill=255)
+
+    # draw.text((32, 67), "✍🏻", font=fontEmoji, fill=255)
+
+    # y = 32
+
+    # for item in data:
+    #     draw.rectangle((0, y, 100, y+24), fill = 0)
+    #     draw.text((7, y+4), f"{item['time']}:00~{item['time']+item['hour']}:00", font = font16, fill = 255)
+    #     draw.text((110, y-2), item['title'], font = font, fill = 0)
+    #     y += 28
 
     # draw.rectangle((0, 28, 90, 52), fill = 0)
     # draw.text((2, 32), '10:00~11:00', font = font16, fill = 255)
