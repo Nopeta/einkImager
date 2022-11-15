@@ -47,8 +47,6 @@ client.loop_start()
 
 try:
     logging.info("epd1in54_V2 Demo")
-    data = get_values(s1)
-    print(len(data))
     # Drawing on the image
     logging.info("1.Drawing on the image...")
     image = Image.new('1', (200, 200), 255)  # 255: clear the frame
@@ -59,8 +57,9 @@ try:
     font16 = ImageFont.truetype(path + 'Font.ttc', 16)
     fontEmoji = ImageFont.truetype(path + 'Emoji.ttf', 72)
 
+    data = get_values(s1)
+
     # HEAD
-    # draw.rectangle((0, 0, 50, 24), fill=0)
     draw.rounded_rectangle((0, 0, 53, 24), 3, fill=0)
     draw.text((3, 2), today, font=font18, fill=255)
     draw.text((80, 0), '預約列表', font=font, fill=0)
