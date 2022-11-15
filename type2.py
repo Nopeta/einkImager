@@ -1,17 +1,40 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+from PIL import Image, ImageDraw, ImageFont
+from img2bytearray import convert_to_bytearray
+import openpyxl
 import sys
 import paho.mqtt.client as mqtt
 import struct
 import os
-
 import logging
 import time
-from PIL import Image, ImageDraw, ImageFont
-from img2bytearray import convert_to_bytearray
-path = os.path.dirname(__file__) + '/'
-logging.basicConfig(level=logging.DEBUG)
 
+path = os.path.dirname(__file__) + '/'
+wb = openpyxl.load_workbook(path + 'data_test2.xlsx')
+s1 = wb.active
+
+
+def get_values(sheet):
+    arr = []                      # 第一層串列
+    for row in sheet:
+        arr2 = []                # 第二層串列
+        if row[0].value == 'date':
+            continue
+        else:
+            if row[0].value.strftime('%m/%d') == '11/11':
+                for column in row:
+                    arr2.append(column.value)  # 寫入內容
+                # arr.append(arr2)
+                obj = {"date": arr2[0].strftime('%m/%d'), "start": arr2[1].strftime('%H:%M'),
+                       "end": arr2[2].strftime('%H:%M'), "name": arr2[3], "use": arr2[4]}
+                arr.append(obj)
+            else:
+                break
+    return arr
+
+
+logging.basicConfig(level=logging.DEBUG)
 client = mqtt.Client()
 client.username_pw_set('app', 'dev')
 client.connect('192.168.168.173', 1883, 60)
@@ -38,20 +61,22 @@ try:
     currentTime = 0
 
     # BODY
-    data = [
-        {"start": 10, "end": 11, "title": "鄭○文"},
-        {"start": 12, "end": 13, "title": "林○宏"},
-        {"start": 13, "end": 15, "title": "陳○良"},
-        {"start": 15, "end": 16, "title": "楊○緯"},
-        {"start": 17, "end": 18, "title": "李○恩"},
-        {"start": 19, "end": 21, "title": "王○龍"}
-    ]
+    # data = [
+    #     {"start": 10, "end": 11, "title": "鄭○文"},
+    #     {"start": 12, "end": 13, "title": "林○宏"},
+    #     {"start": 13, "end": 15, "title": "陳○良"},
+    #     {"start": 15, "end": 16, "title": "楊○緯"},
+    #     {"start": 17, "end": 18, "title": "李○恩"},
+    #     {"start": 19, "end": 21, "title": "王○龍"}
+    # ]
+    data = get_values(s1)
 
     y = 32
     x = 56
 
     for item in data:
-        current = currentTime >= item['start'] and currentTime < item['end']
+        current = currentTime >= item['start'].strftime(
+            '%m') and currentTime < item['end'].strftime('%m')
         draw.polygon([(100, y), (100, y+24), (110, y+24)],
                      fill=0 if not current else 255)
         draw.ellipse((0, y, 5, y+5), fill=0 if not current else 255)
@@ -60,24 +85,12 @@ try:
         draw.rectangle((0, y+5/2, 100, y+24), fill=0 if not current else 255)
         # draw.rounded_rectangle((0, y, 100, y+24), 3,
         #                        fill=0 if not current else 255)
-        draw.text((7, y+4), f"{item['start']}:00~{item['end']}:00",
+        draw.text((7, y+4), f"{item['start']}~{item['end']}",
                   font=font16, fill=255 if not current else 0)
-        draw.text((120, y-2), item['title'], font=font, fill=0)
+        draw.text((120, y-2), item['name'], font=font, fill=0)
         draw.line((190, x, 36, x), fill=0)
         y += 28
         x += 28
-
-    # draw.rectangle((0, 28, 90, 52), fill = 0)
-    # draw.text((2, 32), '10:00~11:00', font = font16, fill = 255)
-    # draw.text((100, 28), '鄭○○', font = font, fill = 0)
-
-    # draw.rectangle((0, 56, 90, 80), fill = 0)
-    # draw.text((2, 60), '13:00~15:00', font = font16, fill = 255)
-    # draw.text((100, 56), '鄭○○', font = font, fill = 0)
-
-    # draw.rectangle((0, 84, 90, 108), fill = 0)
-    # draw.text((2, 88), '15:00~16:00', font = font16, fill = 255)
-    # draw.text((100, 84), '鄭○○', font = font, fill = 0)
 
     client.publish(
         'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
