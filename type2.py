@@ -75,8 +75,8 @@ try:
     x = 56
 
     for item in data:
-        current = currentTime >= item['start'].strftime(
-            '%m') and currentTime < item['end'].strftime('%m')
+        current = currentTime >= int(
+            item['start'][0:2]) and currentTime < int(item['end'][0:2])
         draw.polygon([(100, y), (100, y+24), (110, y+24)],
                      fill=0 if not current else 255)
         draw.ellipse((0, y, 5, y+5), fill=0 if not current else 255)
