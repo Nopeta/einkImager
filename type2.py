@@ -16,8 +16,7 @@ wb = openpyxl.load_workbook(path + 'data_test.xlsx')
 today = datetime.datetime.today().strftime('%m/%d')
 year = datetime.datetime.today().strftime('%Y')
 s1 = wb[year]
-
-print(today)
+# s1 = wb.active
 
 
 def get_values(sheet):
@@ -49,7 +48,7 @@ client.loop_start()
 try:
     logging.info("epd1in54_V2 Demo")
     data = get_values(s1)
-
+    print(len(data))
     # Drawing on the image
     logging.info("1.Drawing on the image...")
     image = Image.new('1', (200, 200), 255)  # 255: clear the frame
@@ -58,6 +57,8 @@ try:
     font = ImageFont.truetype(path + 'Font.ttc', 24)
     font18 = ImageFont.truetype(path + 'Font.ttc', 18)
     font16 = ImageFont.truetype(path + 'Font.ttc', 16)
+    fontEmoji = ImageFont.truetype(path + 'Emoji.ttf', 72)
+
     # HEAD
     # draw.rectangle((0, 0, 50, 24), fill=0)
     draw.rounded_rectangle((0, 0, 53, 24), 3, fill=0)
@@ -78,24 +79,28 @@ try:
 
     y = 32
     x = 56
-
-    for item in data:
-        current = currentTime >= int(
-            item['start'][0:2]) and currentTime < int(item['end'][0:2])
-        draw.polygon([(100, y), (100, y+24), (110, y+24)],
-                     fill=0 if not current else 255)
-        draw.ellipse((0, y, 5, y+5), fill=0 if not current else 255)
-        draw.rectangle((0+5/2, y, 100, y+24),
-                       fill=0 if not current else 255 if not current else 255)
-        draw.rectangle((0, y+5/2, 100, y+24), fill=0 if not current else 255)
-        # draw.rounded_rectangle((0, y, 100, y+24), 3,
-        #                        fill=0 if not current else 255)
-        draw.text((7, y+4), f"{item['start']}~{item['end']}",
-                  font=font16, fill=255 if not current else 0)
-        draw.text((120, y-2), item['name'], font=font, fill=0)
-        draw.line((190, x, 36, x), fill=0)
-        y += 28
-        x += 28
+    if len(data) == 0:
+        draw.text((55, 60), "⏰", font=fontEmoji, fill=0)
+        draw.text((4, 150), '今日沒有任何預約', font=font, fill=0)
+    else:
+        for item in data:
+            current = currentTime >= int(
+                item['start'][0:2]) and currentTime < int(item['end'][0:2])
+            draw.polygon([(100, y), (100, y+24), (110, y+24)],
+                         fill=0 if not current else 255)
+            draw.ellipse((0, y, 5, y+5), fill=0 if not current else 255)
+            draw.rectangle((0+5/2, y, 100, y+24),
+                           fill=0 if not current else 255 if not current else 255)
+            draw.rectangle((0, y+5/2, 100, y+24),
+                           fill=0 if not current else 255)
+            # draw.rounded_rectangle((0, y, 100, y+24), 3,
+            #                        fill=0 if not current else 255)
+            draw.text((7, y+4), f"{item['start']}~{item['end']}",
+                      font=font16, fill=255 if not current else 0)
+            draw.text((120, y-2), item['name'], font=font, fill=0)
+            draw.line((190, x, 36, x), fill=0)
+            y += 28
+            x += 28
 
     client.publish(
         'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
