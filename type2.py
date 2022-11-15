@@ -9,10 +9,15 @@ import struct
 import os
 import logging
 import time
+import datetime
 
 path = os.path.dirname(__file__) + '/'
-wb = openpyxl.load_workbook(path + 'data_test2.xlsx')
-s1 = wb.active
+wb = openpyxl.load_workbook(path + 'data_test.xlsx')
+today = datetime.datetime.today().strftime('%m/%d')
+year = datetime.datetime.today().strftime('%Y')
+s1 = wb[year]
+
+print(today)
 
 
 def get_values(sheet):
@@ -22,7 +27,7 @@ def get_values(sheet):
         if row[0].value == 'date':
             continue
         else:
-            if row[0].value.strftime('%m/%d') == '11/11':
+            if row[0].value.strftime('%m/%d') == today:
                 for column in row:
                     arr2.append(column.value)  # 寫入內容
                 # arr.append(arr2)
@@ -30,7 +35,7 @@ def get_values(sheet):
                        "end": arr2[2].strftime('%H:%M'), "name": arr2[3], "use": arr2[4]}
                 arr.append(obj)
             else:
-                break
+                continue
     return arr
 
 
@@ -43,6 +48,7 @@ client.loop_start()
 
 try:
     logging.info("epd1in54_V2 Demo")
+    data = get_values(s1)
 
     # Drawing on the image
     logging.info("1.Drawing on the image...")
@@ -55,7 +61,7 @@ try:
     # HEAD
     # draw.rectangle((0, 0, 50, 24), fill=0)
     draw.rounded_rectangle((0, 0, 53, 24), 3, fill=0)
-    draw.text((3, 2), '11/07', font=font18, fill=255)
+    draw.text((3, 2), today, font=font18, fill=255)
     draw.text((80, 0), '預約列表', font=font, fill=0)
 
     currentTime = 0
@@ -69,7 +75,6 @@ try:
     #     {"start": 17, "end": 18, "title": "李○恩"},
     #     {"start": 19, "end": 21, "title": "王○龍"}
     # ]
-    data = get_values(s1)
 
     y = 32
     x = 56
