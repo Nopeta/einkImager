@@ -1,16 +1,16 @@
 import os
 import openpyxl
 import datetime
-# from openpyxl.utils import get_column_letter, column_index_from_string
+from openpyxl.utils import get_column_letter, column_index_from_string
 path = os.path.dirname(__file__) + '/'
 wb = openpyxl.load_workbook(path + 'data_test.xlsx')
 
 today = datetime.datetime.today().strftime('%m/%d')
 year = datetime.datetime.today().strftime('%Y')
-# names = wb.sheetnames
-# s1 = wb.active
-s1 = wb[year]
-# print(s1.title, s1.max_row, s1.max_column)
+names = wb.sheetnames
+s2 = wb.active
+# s1 = wb[year]
+s1 = wb['2022']
 
 
 def get_values(sheet):
@@ -32,7 +32,7 @@ def get_values(sheet):
     return arr
 
 
-print(get_values(s1))       # 印出工作表 1 所有內容
+# print(get_values(s1))       # 印出工作表 1 所有內容
 
 # print(column_index_from_string('A'))    # 1
 # print(column_index_from_string('AA'))   # 27

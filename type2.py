@@ -26,7 +26,8 @@ def get_values(sheet):
         if row[0].value == 'date':
             continue
         else:
-            if row[0].value.strftime('%m/%d') == today:
+            # if row[0].value.strftime('%m/%d') == today:
+            if row[0].value.strftime('%m/%d') == '11/15':
                 for column in row:
                     arr2.append(column.value)  # 寫入內容
                 # arr.append(arr2)
@@ -49,7 +50,8 @@ try:
     logging.info("epd1in54_V2 Demo")
     # Drawing on the image
     logging.info("1.Drawing on the image...")
-    image = Image.new('1', (200, 200), 255)  # 255: clear the frame
+    # image = Image.new('1', (200, 200), 255)  # 255: clear the frame
+    image = Image.new('1', (640, 348), 255)  # 255: clear the frame
 
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(path + 'Font.ttc', 24)
@@ -102,7 +104,8 @@ try:
             x += 28
 
     client.publish(
-        'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
+        # 'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
+        'eink/image', bytearray(convert_to_bytearray(image, 640, 384)), qos=2)
     time.sleep(2)
 
 except IOError as e:
