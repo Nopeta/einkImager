@@ -30,7 +30,8 @@ try:
 
     # Drawing on the image
     logging.info("1.Drawing on the image...")
-    image = Image.new('1', (200, 200), 255)  # 255: clear the frame
+    # image = Image.new('1', (200, 200), 255)  # 255: clear the frame
+    image = Image.new('1', (640, 348), 255)  # 255: clear the frame
 
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
