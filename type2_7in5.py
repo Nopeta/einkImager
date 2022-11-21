@@ -12,6 +12,12 @@ import time
 import datetime
 path = os.path.dirname(__file__) + '/'
 
+# with open(path+'/config.json') as fs:
+#     config = json.loads(fs.read())
+# client = mqtt.Client()
+# client.username_pw_set(config['mqtt']['username'], config['mqtt']['password'])
+# client.connect(config['mqtt']['host'], config['mqtt']['port'], 60)
+
 # picdir = os.path.join(os.path.dirname(
 #     os.path.dirname(os.path.realpath(__file__))), 'pic')
 

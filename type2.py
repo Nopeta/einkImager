@@ -3,13 +3,12 @@
 from PIL import Image, ImageDraw, ImageFont
 from img2bytearray import convert_to_bytearray
 import openpyxl
-import sys
 import paho.mqtt.client as mqtt
-import struct
 import os
 import logging
 import time
 import datetime
+import json
 
 path = os.path.dirname(__file__) + '/'
 wb = openpyxl.load_workbook(path + 'data_test.xlsx')
@@ -30,7 +29,6 @@ def get_values(sheet):
             if row[0].value.strftime('%m/%d') == '11/15':
                 for column in row:
                     arr2.append(column.value)  # 寫入內容
-                # arr.append(arr2)
                 obj = {"date": arr2[0].strftime('%m/%d'), "start": arr2[1].strftime('%H:%M'),
                        "end": arr2[2].strftime('%H:%M'), "name": arr2[3], "use": arr2[4]}
                 arr.append(obj)
@@ -40,9 +38,12 @@ def get_values(sheet):
 
 
 logging.basicConfig(level=logging.DEBUG)
+
+with open(path+'/config.json') as fs:
+    config = json.loads(fs.read())
 client = mqtt.Client()
-client.username_pw_set('app', 'dev')
-client.connect('192.168.168.173', 1883, 60)
+client.username_pw_set(config['mqtt']['username'], config['mqtt']['password'])
+client.connect(config['mqtt']['host'], config['mqtt']['port'], 60)
 
 client.loop_start()
 
@@ -50,7 +51,6 @@ try:
     logging.info("epd1in54_V2 Demo")
     # Drawing on the image
     logging.info("1.Drawing on the image...")
-    # image = Image.new('1', (200, 200), 255)  # 255: clear the frame
     image = Image.new('1', (200, 200), 255)  # 255: clear the frame
 
     draw = ImageDraw.Draw(image)
@@ -94,8 +94,6 @@ try:
                            fill=0 if not current else 255 if not current else 255)
             draw.rectangle((0, y+5/2, 100, y+24),
                            fill=0 if not current else 255)
-            # draw.rounded_rectangle((0, y, 100, y+24), 3,
-            #                        fill=0 if not current else 255)
             draw.text((7, y+4), f"{item['start']}~{item['end']}",
                       font=font16, fill=255 if not current else 0)
             draw.text((120, y-2), item['name'], font=font, fill=0)
@@ -104,7 +102,6 @@ try:
             x += 28
 
     client.publish(
-        # 'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
         'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
     time.sleep(2)
 

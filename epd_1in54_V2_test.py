@@ -8,17 +8,19 @@ import sys
 import paho.mqtt.client as mqtt
 import struct
 import os
-# picdir = '/media/jimchen5209/LinuxData/Git/e-Paper/RaspberryPi_JetsonNano/python/pic/'
-picdir = '/Users/cat/Documents/Monosparta_2022-9/E-Paper_code/RaspberryPi_JetsonNano/python/pic'
+import json
+path = os.path.dirname(__file__) + '/'
 
 
 logging.basicConfig(level=logging.DEBUG)
 
 
+with open(path+'/config.json') as fs:
+    config = json.loads(fs.read())
 client = mqtt.Client()
-# client.on_publish = on_publish
-client.username_pw_set('app', 'dev')
-client.connect('192.168.168.173', 1883, 60)
+client.username_pw_set(config['mqtt']['username'], config['mqtt']['password'])
+path = os.path.dirname(__file__) + '/'
+client.connect(config['mqtt']['host'], config['mqtt']['port'], 60)
 
 client.loop_start()
 
@@ -30,11 +32,11 @@ try:
 
     # Drawing on the image
     logging.info("1.Drawing on the image...")
-    # image = Image.new('1', (200, 200), 255)  # 255: clear the frame
-    image = Image.new('1', (640, 348), 255)  # 255: clear the frame
+    image = Image.new('1', (200, 200), 255)  # 255: clear the frame
+    # image = Image.new('1', (640, 348), 255)  # 255: clear the frame
 
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
+    font = ImageFont.truetype(os.path.join(path, 'Font.ttc'), 24)
     # draw.rectangle((0, 10, 200, 34), fill=0)
     # draw.text((8, 12), 'hello world', font=font, fill=255)
     # draw.text((8, 36), u'微雪电子', font=font, fill=0)

@@ -1,2 +1,9 @@
 __pycache__
 *.txt
+config.json
+*.bmp
+*.jpg
+*.png
+*.webp
+*.svg
+*.xlsx

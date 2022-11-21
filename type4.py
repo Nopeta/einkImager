@@ -6,15 +6,18 @@ import struct
 import os
 import logging
 import time
+import json
 from PIL import Image, ImageDraw, ImageFont
 from img2bytearray import convert_to_bytearray
 path = os.path.dirname(__file__) + '/'
 
 logging.basicConfig(level=logging.DEBUG)
 
+with open(path+'/config.json') as fs:
+    config = json.loads(fs.read())
 client = mqtt.Client()
-client.username_pw_set('app', 'dev')
-client.connect('192.168.168.173', 1883, 60)
+client.username_pw_set(config['mqtt']['username'], config['mqtt']['password'])
+client.connect(config['mqtt']['host'], config['mqtt']['port'], 60)
 
 client.loop_start()
 
