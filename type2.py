@@ -51,7 +51,7 @@ try:
     # Drawing on the image
     logging.info("1.Drawing on the image...")
     # image = Image.new('1', (200, 200), 255)  # 255: clear the frame
-    image = Image.new('1', (640, 348), 255)  # 255: clear the frame
+    image = Image.new('1', (200, 200), 255)  # 255: clear the frame
 
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(path + 'Font.ttc', 24)
@@ -66,7 +66,7 @@ try:
     draw.text((3, 2), today, font=font18, fill=255)
     draw.text((80, 0), '預約列表', font=font, fill=0)
 
-    currentTime = 0
+    currentTime = 17
 
     # BODY
     # data = [
@@ -99,13 +99,13 @@ try:
             draw.text((7, y+4), f"{item['start']}~{item['end']}",
                       font=font16, fill=255 if not current else 0)
             draw.text((120, y-2), item['name'], font=font, fill=0)
-            draw.line((190, x, 36, x), fill=0)
+            draw.line((0, x, 200, x), fill=0)
             y += 28
             x += 28
 
     client.publish(
         # 'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
-        'eink/image', bytearray(convert_to_bytearray(image, 640, 384)), qos=2)
+        'eink/image', bytearray(convert_to_bytearray(image, 200, 200)), qos=2)
     time.sleep(2)
 
 except IOError as e:
